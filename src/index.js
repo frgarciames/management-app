@@ -5,10 +5,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import baseStyles from './styles/index'
 import firebase from 'firebase'
-import { BrowserRouter, Route, Redirect } from 'react-router-dom'
-import Login from './login/login'
-import Home from './home/home'
-import Contabilidad from './contabilidad/contabilidad'
+import { BrowserRouter, Route } from 'react-router-dom'
 import Properties from './properties'
 
 

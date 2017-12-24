@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import firebase from 'firebase'
 import Header from './header/header'
-import styles from './styles/styles.css'
-import {Redirect, Route} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import Login from './login/login'
 import Facturas from './facturas/facturas'
 import Trabajadores from './trabajadores/trabajadores'
@@ -96,7 +95,6 @@ class App extends Component {
               <Contabilidad />
             </div>
           )
-          break;
         case '/facturas':
           return (
             <div>
@@ -104,7 +102,6 @@ class App extends Component {
               <Facturas />
             </div>
           )
-          break;
         case '/trabajadores':
           return (
             <div>
@@ -112,7 +109,6 @@ class App extends Component {
               <Trabajadores  />
             </div>
           )
-          break;
         case '/proveedores':
           return (
             <div>
@@ -120,7 +116,6 @@ class App extends Component {
               <Proveedores   />
             </div>
           )
-          break;
         case '/home':
           return (
             <div>
@@ -128,7 +123,6 @@ class App extends Component {
               <Home   />
             </div>
           )
-          break;
         case '/':
           return (
             <div>
@@ -137,7 +131,6 @@ class App extends Component {
               <Home   />
             </div>
           )
-          break;
           default:
             return (
               <div>

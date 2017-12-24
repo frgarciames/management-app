@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { NavLink, Redirect } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styles from './header.css';
 import image from '../utils/logout.png';
 import buttonImage from '../utils/hamburger.png';
@@ -98,9 +98,9 @@ class Header extends Component {
     let page = window.location.pathname;
     page = page.slice(1);
     let pageTemp = page.split("");
-    let pageFinal = new Array();
+    let pageFinal = [];
     for (var i = 0; i < pageTemp.length; i++) {
-      if(pageTemp[i] == "/" || pageTemp[i] == "&" || pageTemp[i] == "?"){
+      if(pageTemp[i] === "/" || pageTemp[i] === "&" || pageTemp[i] === "?"){
         break;
       }
       pageFinal.push(pageTemp[i]);
@@ -161,7 +161,7 @@ class Header extends Component {
                 <NavLink to={`/trabajadores`} activeClassName="actived" className="flex-item" >Trabajadores</NavLink>
               </FlexItem>
             </FlexNav>
-            <ContainerImage onClick={this.openMenu, this.props.onLogout}>
+            <ContainerImage onClick={this.props.onLogout}>
               <NavLink to={`/`} >
                 <img src={image} alt="Logout" width="30px"/>
               </NavLink>

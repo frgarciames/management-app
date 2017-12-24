@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import Form from './form';
-import Header from '../header/header'
-import { BrowserRouter, Link, Route,Router, Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 const Wrapper = styled.div `
   width: 100%;
