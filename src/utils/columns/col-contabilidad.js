@@ -1,9 +1,13 @@
 import React, { Component}  from 'react';
+import matchSorter from 'match-sorter';
 var value = (num) => (num/20);
 export const colContabilidad = [{
   
     Header: 'Cuantía',
     accessor: 'amount',
+    filterMethod: (filter, rows) =>
+       matchSorter(rows, filter.value, { keys: ["amount"] }),
+     filterAll: true,
     Cell: row => 
     (
       <div
@@ -31,7 +35,9 @@ export const colContabilidad = [{
           style={{
             position: 'absolute',
             margin: 'auto',
-            left: '37%' 
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
           }}
         dangerouslySetInnerHTML={{ __html: row.value + ' €'}} />
       </div>
@@ -43,18 +49,27 @@ export const colContabilidad = [{
   }, {
     Header: 'Fecha caja',
     accessor: 'fecha_caja',
+    filterMethod: (filter, rows) =>
+      matchSorter(rows, filter.value, { keys: ["fecha_caja"] }),
+    filterAll: true,
     Cell: row => (
       row.value
     )
   }, {
     Header: 'Fecha inserción',
     accessor: 'fecha_insert',
+    filterMethod: (filter, rows) =>
+      matchSorter(rows, filter.value, { keys: ["fecha_insert"] }),
+    filterAll: true,
     Cell: row => (
       row.value
     )
   }, {
     Header: 'Comentario', // Custom header components!
     accessor: 'comment',
+    filterMethod: (filter, rows) =>
+      matchSorter(rows, filter.value, { keys: ["comment"] }),
+    filterAll: true,
     Cell: row => (
       row.value
     )

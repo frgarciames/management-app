@@ -102,6 +102,7 @@ class Table extends Component {
         style={{
             height: "500px" // This will force the table body to overflow and scroll, since there is not enough room
           }}
+        filterable
         className="-striped -highlight mrgTable"
         getTheadProps={() => {
           return {

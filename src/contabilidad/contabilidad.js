@@ -9,6 +9,7 @@ import moment from 'moment-with-locales-es6';
 import NewCaja from './newCaja'
 import Table from '../utils/table'
 import { formatDateForTable, printDataTable, renderEditableForTable} from '../utils/utils';
+import { getCajas } from '../services/services'
 
 const Wrapper = styled.div`
   width: 90%;
@@ -39,7 +40,7 @@ class Contabilidad extends Component {
   }
 
   componentWillMount() {
-    const cajasRef = firebase.database().ref().child('cajas');
+    const cajasRef = getCajas();
 
     cajasRef.on('value', snapshot => {
       var cajas = [];
