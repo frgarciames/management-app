@@ -288,3 +288,33 @@ input[type=number] {
   appearance: textfield;
   margin: 0; 
 }
+
+.-filters .rt-tr .rt-th:first-child > input {
+  display: none;
+  background-color: salmon;
+}
+
+.ReactModal__Content{
+  width: 390px;
+}
+
+.ReactModal__Body--open {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+@media (max-width: 500px) {
+  .ReactModal__Content{
+    width: 100%;
+    height: 100%;
+  }
+
+  .ReactModal__Body--open {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  .ReactModal__Body--open .rt-noData{
+    display: none;
+  }
+}

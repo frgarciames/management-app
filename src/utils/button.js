@@ -12,8 +12,9 @@ const CustomButton = styled.button `
   box-shadow: 0 3px 5px grey;
   border-radius: 5px;
   cursor: pointer;
-  transition: all .3s ease;
+  transition: all .1s ease;
   margin-top: .5em;
+  margin-left: ${props => (props.marginLeft) ? props.marginLeft : '0'};
   font-family: 'Poppins', sans-serif;
   :hover {
     color: ${props => props.bgcolor};
@@ -33,6 +34,7 @@ class Button extends Component {
                     width={this.props.width}
                     onClick={this.props.click}
                     type={this.props.type}
+                    marginLeft={this.props.marginLeft}
                     >
         {this.props.text}
       </CustomButton>

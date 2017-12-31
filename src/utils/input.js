@@ -29,6 +29,7 @@ class Input extends Component {
         name={this.props.name}
         width={this.props.width}
         cursor={this.props.cursor}
+        required={this.props.required}
       />
     );
   }

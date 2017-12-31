@@ -14,7 +14,7 @@ import Properties from './properties'
     authDomain: Properties.firebase.authDomain,
     databaseURL: Properties.firebase.databaseURL,
     projectId: Properties.firebase.projectId,
-    storageBucket: Properties.firebase.storaeBucket,
+    storageBucket: Properties.firebase.storageBucket,
     messagingSenderId: Properties.firebase.messagingSenderId
   });
 

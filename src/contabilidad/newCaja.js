@@ -9,6 +9,8 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css'
 import styles from '../styles/styles.css'
 import moment from 'moment-with-locales-es6';
+import ReactModal  from 'react-modal'
+import {MdClose} from 'react-icons/lib/md';
 
 const ContainerBox = styled.form `
 width: 100%;
@@ -26,6 +28,15 @@ padding: .5em 0 .5em .3em;
 margin-top: 1em;
 `;
 
+const ContainerClose = styled.span`
+position: absolute;
+right: .5em;
+top: .5em;
+cursor: pointer;
+border: 1px solid #ccc;
+border-radius: 3px;
+`;
+
 
 class newCaja extends Component {
   constructor(props){
@@ -35,7 +46,9 @@ class newCaja extends Component {
         fecha_caja: "",
         amount: 0,
         comment: "",
-        provider: ""
+        provider: "",
+        errorAmount: false,
+        errorFecha: false
     }
     this.handleAddCaja = this.handleAddCaja.bind(this);
   }
@@ -65,42 +78,86 @@ class newCaja extends Component {
   }
 
   handleAddCaja(event){
-    event.preventDefault();
-    const cajaRef = firebase.database().ref().child('cajas');
-    const cajaID = cajaRef.push();
-    console.log(cajaID);
-    var newCaja = {
-      id: cajaID.path.pieces_[1],
-      fecha_insert: moment(Date.now()).format(),
-      fecha_caja: moment(this.state.fecha_caja).format(),
-      amount: this.state.amount,
-      comment: this.state.comment
+    var errors = false;
+    if(this.state.amount == null || this.state.amount == ''){
+      errors = true;
+      this.setState({
+        errorAmount: true
+      })
+    } 
+    if(this.state.fecha_caja == null || this.state.fecha_caja == ''){
+      errors = true;
+      this.setState({
+        errorFecha: true
+      })
+    } 
+    if(!errors){
+      event.preventDefault();
+      const cajaRef = firebase.database().ref().child('cajas');
+      const cajaID = cajaRef.push();
+      console.log(cajaID);
+      var newCaja = {
+        id: cajaID.path.pieces_[1],
+        fecha_insert: moment(Date.now()).format(),
+        fecha_caja: moment(this.state.fecha_caja).format(),
+        amount: this.state.amount,
+        comment: this.state.comment
+      }
+    
+      cajaID.set(newCaja)
+      this.setState({
+        openCaja: false
+      })
+      this.props.close();
+      this.setState({errorAmount: false, errorFecha: false});
     }
-
-    cajaID.set(newCaja)
-    this.setState({
-      openCaja: false
-    })
   }
 
   render() {
     return (
-        <ContainerBox opened={this.props.opened}>
+      <ReactModal 
+              isOpen={this.props.opened}
+              contentLabel="Minimal Modal Example"
+              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false})}}
+              style={{
+                content: {
+                  position: 'absolute',
+                  margin: 'auto',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  bottom: '',
+                  right: '',
+                  padding: '1em'
+                }
+              }}
+            >
+            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false})}}>
+              <MdClose 
+                style={{
+                  fontSize: '1.3em',
+                  color: 'grey'
+                }}
+              />
+              </ContainerClose>
+
         <p>
           <label htmlFor="fecha">Fecha caja:</label>
-          <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_caja" cursor="pointer" change={(event) => this.handleChangeDate(event)}/>
+          <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_caja" cursor="pointer" change={(event) => this.handleChangeDate(event)} />
+          {(this.state.errorFecha) ? <p style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</p> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
-          <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)}/>
+          <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
+          {(this.state.errorAmount) ? <p style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La cantidad es obligatoria</p> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="comment">Comentario:</label>
-          <TextArea name="comment" onChange={(event) => this.handleChangeComment(event)} id="comment">
+          <TextArea name="comment" onChange={(event) => this.handleChangeComment(event)} id="comment" >
           </TextArea>
         </p>
-        <Button color="white" bgcolor="#13P191" text="Guardar" width="100%" click={this.handleAddCaja} type="submit"/>
-      </ContainerBox>
+        <Button color="white" bgcolor="#34A853" text="Guardar" width="100%" click={(event) => {this.handleAddCaja(event)}} type="submit"/>
+      </ReactModal>
     );
   }
 }

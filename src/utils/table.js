@@ -10,6 +10,9 @@ import 'react-table/react-table.css'
 import styles from '../styles/styles.css'
 import moment from 'moment-with-locales-es6';
 import { colContabilidad } from './columns/col-contabilidad'
+import {MdDelete} from 'react-icons/lib/md';
+import Chart from 'chart.js';
+
 
 
 class Table extends Component {
@@ -47,6 +50,15 @@ class Table extends Component {
         this.formattingData();
         this.setState({
           columns
+        }, () => {
+          this.state.columns.forEach(el => {
+            
+            if(el.accessor == 'id'){
+              el.Cell = row => (
+                <MdDelete fontSize='1.5em' cursor='pointer' onClick={() => this.props.openModal(row.value)}/>
+              )
+            }
+          })
         })
       }
       )
@@ -62,6 +74,15 @@ class Table extends Component {
         this.formattingData();
         this.setState({
           columns
+        }, () => {
+          this.state.columns.forEach(el => {
+            
+            if(el.accessor == 'id'){
+              el.Cell = row => (
+                <MdDelete fontSize='1.5em' cursor='pointer' onClick={() => this.props.openModal(row.value)}/>
+              )
+            }
+          })
         })
       }
       )
@@ -69,19 +90,18 @@ class Table extends Component {
   }
 
   componentDidMount(){
-    console.log('loading a false');
     this.setState({
       loading: false
     })
   }
   
   formattingData(){
-    var dataFormat = this.state.dataNotFormatted;
+    var dataFormat = JSON.parse(JSON.stringify(this.state.dataNotFormatted));
     dataFormat.forEach(el => {
       for (var key in el) {
         if(key.includes('fecha')){
           el[key] = moment(el[key]).format('LL')
-        }
+        } 
       }
     })
     this.setState({ 
@@ -103,6 +123,7 @@ class Table extends Component {
             height: "500px" // This will force the table body to overflow and scroll, since there is not enough room
           }}
         filterable
+        defaultPageSize={10}
         className="-striped -highlight mrgTable"
         getTheadProps={() => {
           return {
@@ -111,8 +132,6 @@ class Table extends Component {
             }
           }
         }
-        
-
         }
         getPaginationProps={(rowInfo, state, ) => {
           return {

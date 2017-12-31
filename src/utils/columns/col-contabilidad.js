@@ -1,8 +1,19 @@
 import React, { Component}  from 'react';
 import matchSorter from 'match-sorter';
+import {MdDelete} from 'react-icons/lib/md';
+import {deleteCaja} from '../../services/services'
+
 var value = (num) => (num/20);
-export const colContabilidad = [{
-  
+export const colContabilidad = [
+  {
+    Header: '', // Custom header components!
+    accessor: 'id',
+    width: 50,
+    Cell: row => (
+      <MdDelete fontSize='1.5em' cursor='pointer' value={row.value} onClick={() => this.props.openModal(row.value)}/>
+    )
+  },
+  {
     Header: 'Cuantía',
     accessor: 'amount',
     filterMethod: (filter, rows) =>
@@ -45,7 +56,8 @@ export const colContabilidad = [{
     </div>
     ), // String-based value accessors!
     sortMethod: (a, b) => 
-       (parseInt(a) > parseInt(b) ? 1 : -1)
+       (parseInt(a) > parseInt(b) ? 1 : -1),
+    minWidth: 120
   }, {
     Header: 'Fecha caja',
     accessor: 'fecha_caja',
@@ -54,7 +66,8 @@ export const colContabilidad = [{
     filterAll: true,
     Cell: row => (
       row.value
-    )
+    ),
+    minWidth: 220
   }, {
     Header: 'Fecha inserción',
     accessor: 'fecha_insert',
@@ -63,7 +76,8 @@ export const colContabilidad = [{
     filterAll: true,
     Cell: row => (
       row.value
-    )
+    ),
+    minWidth: 220
   }, {
     Header: 'Comentario', // Custom header components!
     accessor: 'comment',
@@ -72,5 +86,6 @@ export const colContabilidad = [{
     filterAll: true,
     Cell: row => (
       row.value
-    )
+    ),
+    minWidth: 200
   }]
