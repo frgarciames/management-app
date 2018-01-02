@@ -40,6 +40,7 @@ const Wrapper = styled.div`
   width: 90%;
   max-width: 900px;
   padding: 1em;
+  padding-top: 0;
   @media(max-width: 1700px){
     margin: 0 auto;
     max-width: 1000px;
@@ -47,15 +48,17 @@ const Wrapper = styled.div`
 `;
 
 const ContainerButton = styled.div`
-  width: 10%;
-  max-width: 900px;
+  width: 80%;
   margin: 0 auto;
+  max-width: 20em;
+  @media(max-width:500px){
+    
+  }
 `;
 
 const WrapperBox = styled.div`
   width: 100%;
   margin-top: 1.5em;
-
 `;
 
 const HeaderModal = styled.div`
@@ -186,7 +189,7 @@ class Contabilidad extends Component {
       <ContainerWrapper>
         <ContainerButton>
           <Button color="white" bgcolor="#34A853" text='Nueva caja' width="100%" click={this.openCaja} />
-          <NewCaja opened={this.state.openCaja} close={this.openCaja}/>
+          <NewCaja opened={this.state.openCaja} close={this.openCaja} cajas={this.state.cajas}/>
         </ContainerButton>
         <FlexWrapper>
           <Wrapper>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Chart from '../utils/grafica';
+import Chart from '../utils/chart';
 import moment from 'moment-with-locales-es6'
 
 class ChartContabilidad extends Component {

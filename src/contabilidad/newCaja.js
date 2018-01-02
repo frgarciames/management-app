@@ -43,14 +43,28 @@ class newCaja extends Component {
     super(props);
     this.state = {
         openCaja: this.props.openCaja,
+        cajas: [],
         fecha_caja: "",
         amount: 0,
         comment: "",
         provider: "",
         errorAmount: false,
-        errorFecha: false
+        errorFecha: false,
+        errorSameDate: false
     }
     this.handleAddCaja = this.handleAddCaja.bind(this);
+  }
+
+  componentWillMount(){
+    this.setState({
+      cajas: this.props.cajas
+    })
+  }
+
+  componentWillReceiveProps(props){
+    this.setState({
+      cajas: props.cajas
+    })
   }
 
   handleChangeDate(event){
@@ -79,10 +93,19 @@ class newCaja extends Component {
 
   handleAddCaja(event){
     var errors = false;
+    this.setState({
+      errorSameDate: false,
+      errorFecha: false,
+      errorAmount: false
+    })
     if(this.state.amount == null || this.state.amount == ''){
       errors = true;
       this.setState({
         errorAmount: true
+      })
+    } else {
+      this.setState({
+        errorAmount: false
       })
     } 
     if(this.state.fecha_caja == null || this.state.fecha_caja == ''){
@@ -90,6 +113,27 @@ class newCaja extends Component {
       this.setState({
         errorFecha: true
       })
+    } else {
+      var dates = [];
+      this.state.cajas.forEach(el => {
+        for(var key in el){
+          if(key === 'fecha_caja'){
+            dates.push(el[key]);
+          }
+        }
+      })
+
+      dates.forEach(el => {
+        console.log(moment(el).format().valueOf() === moment(this.state.fecha_caja).format().valueOf())
+        if(moment(el).format().valueOf() === moment(this.state.fecha_caja).format().valueOf()){
+          errors = true;
+          this.setState({
+            errorSameDate: true
+          })
+        } 
+      })
+
+
     } 
     if(!errors){
       event.preventDefault();
@@ -109,7 +153,14 @@ class newCaja extends Component {
         openCaja: false
       })
       this.props.close();
-      this.setState({errorAmount: false, errorFecha: false});
+      this.setState({
+        fecha_caja: "",
+        amount: 0,
+        comment: "",
+        provider: "",
+        errorAmount: false,
+        errorFecha: false
+      });
     }
   }
 
@@ -118,7 +169,7 @@ class newCaja extends Component {
       <ReactModal 
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
-              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false})}}
+              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false, fecha_caja: "", amount: 0})}}
               style={{
                 content: {
                   position: 'absolute',
@@ -132,7 +183,7 @@ class newCaja extends Component {
                 }
               }}
             >
-            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false})}}>
+            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorFecha: false, fecha_caja: "", amount: 0})}}>
               <MdClose 
                 style={{
                   fontSize: '1.3em',
@@ -144,12 +195,13 @@ class newCaja extends Component {
         <p>
           <label htmlFor="fecha">Fecha caja:</label>
           <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_caja" cursor="pointer" change={(event) => this.handleChangeDate(event)} />
-          {(this.state.errorFecha) ? <p style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</p> : ''}
+          {(this.state.errorFecha) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</span> : ''}
+          {(this.state.errorSameDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*Este día ya existe</span> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
           <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
-          {(this.state.errorAmount) ? <p style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La cantidad es obligatoria</p> : ''}
+          {(this.state.errorAmount) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La cantidad es obligatoria</span> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="comment">Comentario:</label>
