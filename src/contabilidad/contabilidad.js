@@ -9,10 +9,9 @@ import moment from 'moment-with-locales-es6';
 import NewCaja from './newCaja'
 import Table from '../utils/table'
 import { formatDateForTable, printDataTable, renderEditableForTable } from '../utils/utils';
-import { getCajas } from '../services/services'
+import { getCajas, deleteCaja } from '../services/services'
 import ReactModal  from 'react-modal'
 import {MdWarning, MdCheck, MdClose} from 'react-icons/lib/md';
-import {deleteCaja} from '../services/services'
 import ChartContabilidad from './chart-contabilidad'
 
 const ContainerClose = styled.span`

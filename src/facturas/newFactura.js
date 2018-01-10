@@ -11,6 +11,8 @@ import styles from '../styles/styles.css'
 import moment from 'moment-with-locales-es6';
 import ReactModal  from 'react-modal'
 import {MdClose} from 'react-icons/lib/md';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 
 const ContainerBox = styled.form `
 width: 100%;
@@ -38,39 +40,45 @@ border-radius: 3px;
 `;
 
 
-class newCaja extends Component {
+class NewFactura extends Component {
   constructor(props){
     super(props);
     this.state = {
-        openCaja: this.props.openCaja,
-        cajas: [],
-        fecha_caja: "",
+        openFactura: this.props.openFactura,
+        facturas: [],
+        fecha_factura: "",
         amount: 0,
         comment: "",
         provider: "",
         errorAmount: false,
         errorDate: false,
-        errorSameDate: false
+        proveedorSelected: '',
+        selectDisabled: false
     }
-    this.handleAddCaja = this.handleAddCaja.bind(this);
+    this.handleAddFactura = this.handleAddFactura.bind(this);
   }
 
   componentWillMount(){
     this.setState({
-      cajas: this.props.cajas
+      facturas: this.props.facturas
     })
   }
 
   componentWillReceiveProps(props){
     this.setState({
-      cajas: props.cajas
+      facturas: props.facturas
     })
   }
 
   handleChangeDate(event){
     this.setState({
-      fecha_caja: event.target.value
+      fecha_factura: event.target.value
     })
+  }
+
+  handleChangeSelect = (proveedorSelected) => {
+    this.setState({ proveedorSelected });
+    console.log(`Selected: ${proveedorSelected.label}`);
   }
 
   handleChangeAmount(event){
@@ -90,11 +98,16 @@ class newCaja extends Component {
       provider: event.target.provider
     })
   }
+  
+  handleChangeDisableSelect(event){
+    this.setState({
+      selectDisabled: !this.state.selectDisabled
+    })
+  }
 
-  handleAddCaja(event){
+  handleAddFactura(event){
     var errors = false;
     this.setState({
-      errorSameDate: false,
       errorDate: false,
       errorAmount: false
     })
@@ -108,51 +121,33 @@ class newCaja extends Component {
         errorAmount: false
       })
     } 
-    if(this.state.fecha_caja == null || this.state.fecha_caja == ''){
+    if(this.state.fecha_factura == null || this.state.fecha_factura == ''){
       errors = true;
       this.setState({
         errorDate: true
       })
-    } else {
-      var dates = [];
-      this.state.cajas.forEach(el => {
-        for(var key in el){
-          if(key === 'fecha_caja'){
-            dates.push(el[key]);
-          }
-        }
-      })
+    }
 
-      dates.forEach(el => {
-        if(moment(el).format().valueOf() === moment(this.state.fecha_caja).format().valueOf()){
-          errors = true;
-          this.setState({
-            errorSameDate: true
-          })
-        } 
-      })
-
-
-    } 
     if(!errors){
       event.preventDefault();
-      const cajaRef = firebase.database().ref().child('cajas');
-      const cajaID = cajaRef.push();
-      var newCaja = {
-        id: cajaID.path.pieces_[1],
+      const facturaRef = firebase.database().ref().child('facturas');
+      const facturaID = facturaRef.push();
+      var newFactura = {
+        id: facturaID.path.pieces_[1],
         fecha_insert: moment(Date.now()).format(),
-        fecha_caja: moment(this.state.fecha_caja).format(),
+        fecha_factura: moment(this.state.fecha_factura).format(),
         amount: this.state.amount,
+        provider: this.state.provider,
         comment: this.state.comment
       }
     
-      cajaID.set(newCaja)
+      facturaID.set(newFactura)
       this.setState({
-        openCaja: false
+        openFactura: false
       })
       this.props.close();
       this.setState({
-        fecha_caja: "",
+        fecha_factura: "",
         amount: 0,
         comment: "",
         provider: "",
@@ -163,11 +158,13 @@ class newCaja extends Component {
   }
 
   render() {
+    const { proveedorSelect } = this.state;
+    const value = proveedorSelect && proveedorSelect.value;
     return (
       <ReactModal 
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
-              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, errorSameDate: false, fecha_caja: "", amount: 0})}}
+              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}
               style={{
                 content: {
                   position: 'absolute',
@@ -181,7 +178,7 @@ class newCaja extends Component {
                 }
               }}
             >
-            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, errorSameDate: false, fecha_caja: "", amount: 0})}}>
+            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}>
               <MdClose 
                 style={{
                   fontSize: '1.3em',
@@ -191,11 +188,29 @@ class newCaja extends Component {
               </ContainerClose>
 
         <p>
-          <label htmlFor="fecha">Fecha caja:</label>
-          <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_caja" cursor="pointer" change={(event) => this.handleChangeDate(event)} />
+          <label htmlFor="fecha">Fecha factura:</label>
+          <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_factura" cursor="pointer" change={(event) => this.handleChangeDate(event)} />
           {(this.state.errorDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</span> : ''}
-          {(this.state.errorSameDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*Este día ya existe</span> : ''}
         </p>
+        <div>
+          <label htmlFor="">Proveedor:</label>
+          <Select
+                name="form-field-name"
+                value={value}
+                onChange={this.handleChange}
+                placeholder='Busca un proveedor'
+                disabled={this.state.selectDisabled}
+                options={[
+                { value: 'one', label: 'One' },
+                { value: 'two', label: 'Two' },
+                ]}
+            />
+          <label className="container" htmlFor="check-select">No es ninguno
+            <input type="checkbox" onChange={(event) => this.handleChangeDisableSelect(event)} id="check-select" />
+            <span className="checkmark"></span>
+          </label>
+        </div>
+        {(this.state.selectDisabled) ? <p>Escriba el proveedor <input type="text" /></p> : ''}
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
           <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
@@ -206,10 +221,10 @@ class newCaja extends Component {
           <TextArea name="comment" onChange={(event) => this.handleChangeComment(event)} id="comment" >
           </TextArea>
         </p>
-        <Button color="white" bgcolor="#34A853" text="Guardar" width="100%" click={(event) => {this.handleAddCaja(event)}} type="submit"/>
+        <Button color="white" bgcolor="#34A853" text="Guardar" width="100%" click={(event) => {this.handleAddFactura(event)}} type="submit"/>
       </ReactModal>
     );
   }
 }
 
-export default newCaja;
+export default NewFactura;
