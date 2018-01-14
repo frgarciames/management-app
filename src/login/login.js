@@ -6,6 +6,8 @@ import { Redirect } from 'react-router-dom'
 const Wrapper = styled.div `
   width: 100%;
   height: auto;
+  max-width: 30em;
+  margin: 0 auto;
 `;
 
 class Login extends Component {

@@ -8,7 +8,7 @@ const CustomInput = styled.input `
   border-bottom: 1px solid ${props => props.bdcolor};
   width: ${props => props.width ? props.width : '100%'};
   padding: .5em 0 .5em .3em;
-  margin-top: 1em;
+  margin-top:  ${props => props.mgTop ? props.mgTop : '1em'};
   cursor: ${props => props.cursor};
 `;
 
@@ -30,6 +30,7 @@ class Input extends Component {
         width={this.props.width}
         cursor={this.props.cursor}
         required={this.props.required}
+        mgTop={this.props.mgTop}
       />
     );
   }

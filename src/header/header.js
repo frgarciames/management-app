@@ -157,9 +157,9 @@ class Header extends Component {
               <FlexItem  opened={this.state.isOpened} onClick={() => {this.openMenu(); this.pageAreIn()}}>
                 <NavLink to={`/proveedores`} activeClassName="actived" className="flex-item" >Proveedores</NavLink>
               </FlexItem>
-              <FlexItem  opened={this.state.isOpened} onClick={() => {this.openMenu(); this.pageAreIn()}}>
+              {/**<FlexItem  opened={this.state.isOpened} onClick={() => {this.openMenu(); this.pageAreIn()}}>
                 <NavLink to={`/trabajadores`} activeClassName="actived" className="flex-item" >Trabajadores</NavLink>
-              </FlexItem>
+              </FlexItem>**/}
             </FlexNav>
             <ContainerImage onClick={this.props.onLogout}>
               <NavLink to={`/`} >

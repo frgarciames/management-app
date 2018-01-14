@@ -9,37 +9,58 @@ class ChartFacturas extends Component {
       chartData:{},
       facturas: props.data,
       amountFacturas: [],
-      show: true
+      show: true,
+      titleChart: ""
     }
   }
 
   componentWillMount(){
 
     var arrayAux = JSON.parse(JSON.stringify(this.props.data));
-    arrayAux.sort((a, b) => {
-        if (a.fecha_factura > b.fecha_factura) return -1;
-        if (a.fecha_factura < b.fecha_factura) return 1;
-        return 0;
+    var providers = [];
+    arrayAux.forEach((el) => {
+        providers.push(el.provider)
     })
-    var arrayAmount = [];
-    arrayAux.forEach(el => {
-        arrayAmount.push(el.amount);
+    var uniq = providers.reduce((a, b) => {
+      function indexOfProperty (a, b){
+          for (var i=0;i<a.length;i++){
+              if(a[i].id == b.id){
+                   return i;
+               }
+          }
+         return -1;
+      }
+
+      if (indexOfProperty(a,b) < 0 ) a.push(b);
+        return a;
+    },[]);
+    var providerNames = [];
+    
+    uniq.forEach(el => {
+      providerNames.push(el.name)
     })
-    var arrayDate = [];
-    arrayAux.forEach(el => {
-        arrayDate.push(moment(el.fecha_factura).format('L'));
+    var amountArr = [];
+    providerNames.forEach((elName) => {
+      var amount = 0;
+      arrayAux.forEach(el => {
+        if(elName == el.provider.name){
+          amount += parseInt(el.amount);
+        }
+      })
+      amountArr.push(amount);
     })
+    console.log(amountArr)
     this.setState({
-        amountFacturas: arrayAux,
         show: this.props.show,
+        titleChart: this.props.title,
         chartData:{
-            labels: arrayDate,
+            labels: providerNames,
             datasets:[
               {
                 label:'Cantidad',
-                data: arrayAmount,
-                backgroundColor:'#F38069',
-                borderColor: '#FF2E00'
+                data: amountArr,
+                backgroundColor: ['#F38069', 'blue'],
+                borderColor: 'white'
               }
             ]
           }
@@ -80,9 +101,9 @@ class ChartFacturas extends Component {
       })
       amountArr.push(amount);
     })
-    console.log(amountArr)
     this.setState({
         show: props.show,
+        titleChart: props.title,
         chartData:{
             labels: providerNames,
             datasets:[
@@ -101,7 +122,10 @@ class ChartFacturas extends Component {
     return (
       <div className="App">
       {(this.state.show) ?
-        <Chart chartData={this.state.chartData} legendPosition="bottom" type="pie" text="Cantidad en € de facturas"/>
+        <Chart chartData={this.state.chartData} legendPosition="bottom" type="pie" text={(this.state.titleChart == "" ||
+                                                                                          this.state.titleChart == null ||
+                                                                                          this.state.titleChart == undefined) ? 
+        "Cantidad en € de facturas" : this.state.titleChart}/>
         : ''}
       </div>
     );

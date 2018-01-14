@@ -63,7 +63,7 @@ class Form extends Component {
         </ContainerInput>
         <p>
           <Button color="white" bgcolor="#6DCCD7" text="Entrar" width="100%" click={(event) => this.props.onAuthEmail(this.state.email, this.state.password, event)} />
-          <Button color="white" bgcolor="#EA4335" text="Entrar con Google" width="100%" click={(event) => this.props.onAuthLogin(event)} />
+          {/*<Button color="white" bgcolor="#EA4335" text="Entrar con Google" width="100%" click={(event) => this.props.onAuthLogin(event)} />*/}
         </p>
       </Wrapper>
     );

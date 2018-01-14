@@ -56,6 +56,7 @@ class NewFactura extends Component {
         },
         errorAmount: false,
         errorDate: false,
+        errorProvider: false,
         selectDisabled: false,
         providers: [],
         options: [],
@@ -119,7 +120,8 @@ class NewFactura extends Component {
   
   handleChangeDisableSelect(event){
     this.setState({
-      selectDisabled: !this.state.selectDisabled
+      selectDisabled: !this.state.selectDisabled,
+      selectedOption: {}
     })
   }
 
@@ -154,6 +156,19 @@ class NewFactura extends Component {
       errors = true;
       this.setState({
         errorDate: true
+      })
+    }
+
+    if(this.state.provider == null || 
+      this.state.provider == undefined || 
+      this.state.provider.id == null ||
+      this.state.provider.id == "" ||
+      this.state.provider.name == null ||
+      this.state.provider.name == "" 
+    ) {
+      errors = true;
+      this.setState({
+        errorProvider: true
       })
     }
 
@@ -198,6 +213,7 @@ class NewFactura extends Component {
         provider: "",
         errorAmount: false,
         errorDate: false,
+        errorProvider: false,
         provider: {
           id: "",
           name: ""
@@ -215,7 +231,7 @@ class NewFactura extends Component {
               ariaHideApp={false}
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
-              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}
+              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorProvider: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}
               style={{
                 content: {
                   position: 'absolute',
@@ -229,7 +245,7 @@ class NewFactura extends Component {
                 }
               }}
             >
-            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}>
+            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorProvider: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}>
               <MdClose 
                 style={{
                   fontSize: '1.3em',
@@ -253,7 +269,8 @@ class NewFactura extends Component {
                 disabled={this.state.selectDisabled}
                 options={this.state.options}
                 style={{
-                  marginBottom: '2em'
+                  marginBottom: '1em',
+                  marginTop: '1em'
                 }}
             />
           <div className="pretty p-switch p-fill">
@@ -264,9 +281,10 @@ class NewFactura extends Component {
           </div>
         </div>
         {(this.state.selectDisabled) ?
-           <p style={{marginTop: '1em'}}>Escriba el proveedor
-            <Input bdcolor="#ccc" color="#222" type="text"  id="providerOther" name="providerOther" change={(event) => this.handleChangeProvider(event)} />
-            </p> : ''}
+           <p style={{marginTop: '1em'}}>Escriba el proveedor:
+            <Input bdcolor="#ccc" color="#222" type="text"  id="providerOther" mgTop="0" name="providerOther" change={(event) => this.handleChangeProvider(event)} />
+            </p> : ''} 
+        {(this.state.errorProvider) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '-1em'}}>*El proveedor es obligatorio</span> : ''}
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
           <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
