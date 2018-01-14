@@ -64,4 +64,18 @@ export function renderEditableForTable(cellInfo, dataInfo) {
     );
 }
 
+export const getMonths = () => {
+    return         [{name: 'enero', id: 1},
+        {name: 'febrero', id: 2},
+        {name: 'marzo', id: 3},
+        {name: 'abril', id: 4},
+        {name: 'mayo', id: 5},
+        {name: 'junio', id: 6},
+        {name: 'julio', id: 7},
+        {name: 'agosto', id: 8},
+        {name: 'septiembre', id: 9},
+        {name: 'octubre', id: 10},
+        {name: 'noviembre', id: 11},
+        {name: 'diciembre', id: 12}]
+    }
 

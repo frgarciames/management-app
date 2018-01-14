@@ -165,6 +165,7 @@ class newCaja extends Component {
   render() {
     return (
       <ReactModal 
+              ariaHideApp={false}
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
               onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, errorSameDate: false, fecha_caja: "", amount: 0})}}

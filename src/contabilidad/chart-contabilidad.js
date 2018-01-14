@@ -8,7 +8,8 @@ class ChartContabilidad extends Component {
     this.state = {
       chartData:{},
       cajas: props.data,
-      amountCajas: []
+      amountCajas: [],
+      show: true
     }
   }
 
@@ -30,6 +31,7 @@ class ChartContabilidad extends Component {
     })
     this.setState({
         amountCajas: arrayAux,
+        show: this.props.show,
         chartData:{
             labels: arrayDate,
             datasets:[
@@ -61,6 +63,7 @@ class ChartContabilidad extends Component {
     })
     this.setState({
         amountCajas: arrayAux,
+        show: props.show,
         chartData:{
             labels: arrayDate,
             datasets:[
@@ -78,7 +81,9 @@ class ChartContabilidad extends Component {
   render() {
     return (
       <div className="App">
+        {(this.state.show) ? 
         <Chart chartData={this.state.chartData} legendPosition="bottom" type="line" text="Cantidad en € de cajas diarias"/>
+        : ''}
       </div>
     );
   }

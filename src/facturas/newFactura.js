@@ -13,6 +13,7 @@ import ReactModal  from 'react-modal'
 import {MdClose} from 'react-icons/lib/md';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
+import { getProviders } from '../services/services'
 
 const ContainerBox = styled.form `
 width: 100%;
@@ -49,19 +50,38 @@ class NewFactura extends Component {
         fecha_factura: "",
         amount: 0,
         comment: "",
-        provider: "",
+        provider: {
+          id: "",
+          name: ""
+        },
         errorAmount: false,
         errorDate: false,
-        proveedorSelected: '',
-        selectDisabled: false
+        selectDisabled: false,
+        providers: [],
+        options: [],
+        selectedOption: {}
     }
     this.handleAddFactura = this.handleAddFactura.bind(this);
   }
 
   componentWillMount(){
-    this.setState({
-      facturas: this.props.facturas
+    const providersRef = getProviders();
+
+    providersRef.on('value', snapshot => {
+      var providers = [];
+      snapshot.forEach(provider => {
+        providers.push(provider.val());
+      })
+      this.setState({
+        providers,
+        facturas: this.props.facturas
+      }, () => {
+        this.setState({
+          options: this.getOptions()
+        })
+      })
     })
+    
   }
 
   componentWillReceiveProps(props){
@@ -76,9 +96,13 @@ class NewFactura extends Component {
     })
   }
 
-  handleChangeSelect = (proveedorSelected) => {
-    this.setState({ proveedorSelected });
-    console.log(`Selected: ${proveedorSelected.label}`);
+  handleChangeProvider(provider){
+    if(null != provider){
+      (this.state.selectDisabled) ? 
+      this.setState({ provider: {id: "", name: provider.target.value} }) : 
+      this.setState({ provider: {id: provider.value, name: provider.label}, selectedOption: {label: provider.label, value: provider.value} })
+    }
+
   }
 
   handleChangeAmount(event){
@@ -92,17 +116,22 @@ class NewFactura extends Component {
       comment: event.target.value
     })
   }
-
-  handleChangeProvider(event){
-    this.setState({
-      provider: event.target.provider
-    })
-  }
   
   handleChangeDisableSelect(event){
     this.setState({
       selectDisabled: !this.state.selectDisabled
     })
+  }
+
+  getOptions(){
+    var options = [];
+    this.state.providers.forEach(el => {
+      options.push({
+        value: el.id,
+        label: el.name
+      })
+    })
+    return options;
   }
 
   handleAddFactura(event){
@@ -132,6 +161,7 @@ class NewFactura extends Component {
       event.preventDefault();
       const facturaRef = firebase.database().ref().child('facturas');
       const facturaID = facturaRef.push();
+
       var newFactura = {
         id: facturaID.path.pieces_[1],
         fecha_insert: moment(Date.now()).format(),
@@ -140,8 +170,23 @@ class NewFactura extends Component {
         provider: this.state.provider,
         comment: this.state.comment
       }
-    
+      console.log(this.state.provider.id);
+      if(null === this.state.provider.id || "" === this.state.provider.id){
+        const providerRef = firebase.database().ref().child('providers');
+        const providerID = providerRef.push();
+
+        var provider = {
+          id: providerID.path.pieces_[1],
+          name: this.state.provider.name
+        }
+
+        providerID.set(provider)
+
+        newFactura.provider = provider
+      }
+
       facturaID.set(newFactura)
+      
       this.setState({
         openFactura: false
       })
@@ -158,10 +203,11 @@ class NewFactura extends Component {
   }
 
   render() {
-    const { proveedorSelect } = this.state;
-    const value = proveedorSelect && proveedorSelect.value;
+    const { selectedOption } = this.state;
+  	const value = selectedOption && selectedOption.value;
     return (
       <ReactModal 
+              ariaHideApp={false}
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
               onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}
@@ -193,24 +239,26 @@ class NewFactura extends Component {
           {(this.state.errorDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</span> : ''}
         </p>
         <div>
-          <label htmlFor="">Proveedor:</label>
+          <label>Proveedor:</label>
           <Select
                 name="form-field-name"
                 value={value}
-                onChange={this.handleChange}
+                onChange={(event) => this.handleChangeProvider(event)}
                 placeholder='Busca un proveedor'
                 disabled={this.state.selectDisabled}
-                options={[
-                { value: 'one', label: 'One' },
-                { value: 'two', label: 'Two' },
-                ]}
+                options={this.state.options}
+                style={{
+                  marginBottom: '2em'
+                }}
             />
-          <label className="container" htmlFor="check-select">No es ninguno
-            <input type="checkbox" onChange={(event) => this.handleChangeDisableSelect(event)} id="check-select" />
-            <span className="checkmark"></span>
-          </label>
+          <div className="pretty p-switch p-fill">
+              <input type="checkbox" onChange={(event) => this.handleChangeDisableSelect(event)} />
+              <div className="state">
+                  <label>No es ninguno de los anteriores</label>
+              </div>
+          </div>
         </div>
-        {(this.state.selectDisabled) ? <p>Escriba el proveedor <input type="text" /></p> : ''}
+        {(this.state.selectDisabled) ? <p>Escriba el proveedor <input type="text" onChange={(event) => this.handleChangeProvider(event)} /></p> : ''}
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
           <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />

@@ -9,6 +9,10 @@ export function getFacturas(){
     return firebase.database().ref().child('facturas')
 }
 
+export function getProviders(){
+    return firebase.database().ref().child('providers')
+}
+
 export function deleteCaja(caja){
     var desertRef = firebase.database().ref().child('cajas/' + caja.id);
     

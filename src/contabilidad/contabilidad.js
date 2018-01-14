@@ -8,7 +8,7 @@ import styles from '../styles/styles.css'
 import moment from 'moment-with-locales-es6';
 import NewCaja from './newCaja'
 import Table from '../utils/table'
-import { formatDateForTable, printDataTable, renderEditableForTable } from '../utils/utils';
+import { formatDateForTable, printDataTable, renderEditableForTable, getMonths } from '../utils/utils';
 import { getCajas, deleteCaja } from '../services/services'
 import ReactModal  from 'react-modal'
 import {MdWarning, MdCheck, MdClose} from 'react-icons/lib/md';
@@ -40,6 +40,7 @@ const Wrapper = styled.div`
   max-width: 900px;
   padding: 1em;
   padding-top: 0;
+  position: relative;
   @media(max-width: 1700px){
     margin: 0 auto;
     max-width: 1000px;
@@ -105,6 +106,10 @@ const FooterModal = styled.div`
   }
 `;
 
+const SelectMonth = styled.div`
+  margin-top: 1em;
+`; 
+
 class Contabilidad extends Component {
   constructor() {
     super();
@@ -118,12 +123,21 @@ class Contabilidad extends Component {
       provider: "",
       showModal: false,
       cajaSelected: Object,
-      cajasDate: []
+      cajasToChart: [],
+      months: getMonths(),
+      monthSelected: {
+        id: "",
+        name: ""
+      },
+      showTable: true,
+      showChart: true
     }
 
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.openCaja = this.openCaja.bind(this);
+    this.showTable = this.showTable.bind(this);
+    this.showChart = this.showChart.bind(this);
     moment.locale('es');
   }
 
@@ -138,17 +152,11 @@ class Contabilidad extends Component {
       this.setState({
         cajas
       }, () => {
-        var arrayDate = [];
-        this.state.cajas.forEach(el => {
-          arrayDate.push(moment(el.fecha_caja).format('L'));
+        let cajasPerMonth = this.state.cajas.filter(el => {
+          return moment(new Date()).month() == moment(el.fecha_caja).month();
         })
-        arrayDate.sort(function(a,b){
-          if (a > b) return -1;
-          if (a < b) return 1;
-          return 0;
-        });
         this.setState({
-          cajasDate: arrayDate
+          cajasToChart: cajasPerMonth
         })
       })
     })
@@ -182,6 +190,27 @@ class Contabilidad extends Component {
     this.setState({ showModal: false, showModalDeleted: false });
   }
 
+  changeMonth(event){
+    let month = this.state.months.filter(el => {
+      return el.id == event.target.value
+    })
+    let cajasPerMonth = this.state.cajas.filter(el => {
+      return event.target.value == moment(el.fecha_caja).month() + 1;
+    })
+    this.setState({
+      monthSelected: month[0],
+      cajasToChart: cajasPerMonth
+    })
+  }
+
+  showTable(){
+    this.setState({showTable: !this.state.showTable})
+  }
+
+  showChart(){
+    this.setState({showChart: !this.state.showChart})
+  }
+
   render() {
     const data = this.state.cajas;
     return (
@@ -192,10 +221,12 @@ class Contabilidad extends Component {
         </ContainerButton>
         <FlexWrapper>
           <Wrapper>
+            <Button color="black" bgcolor="#fff" text={(this.state.showTable) ? 'Ocultar tabla' : 'Mostrar tabla' } width="10em" click={this.showTable} />
             <Table
               data={data}
               type='contabilidad'
               openModal={this.handleOpenModal}
+              show={this.state.showTable}
             />
 
             <ReactModal 
@@ -289,7 +320,20 @@ class Contabilidad extends Component {
 
           </Wrapper>
           <Wrapper>
-            <ChartContabilidad data={this.state.cajas} date={this.state.cajasDate}/>
+            <Button color="black" bgcolor="#fff" text={(this.state.showChart) ? 'Ocultar gráfica' : 'Mostrar gráfica' } width="13em" click={this.showChart} />
+            {(this.state.showChart) ? 
+            <div>
+              <SelectMonth>
+                <select onChange={(event) => this.changeMonth(event)}>
+                {this.state.months.map((el) => {
+                  return <option key={el.id} value={el.id}>{el.name.charAt(0).toUpperCase() + el.name.slice(1)}</option>
+                })}
+                  
+                </select>
+              </SelectMonth>
+            </div>
+            : ''}
+            <ChartContabilidad data={this.state.cajasToChart} show={this.state.showChart}/>
           </Wrapper>
         </FlexWrapper>
       </ContainerWrapper>

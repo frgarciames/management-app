@@ -12,6 +12,7 @@ import moment from 'moment-with-locales-es6';
 import { colContabilidad } from './columns/col-contabilidad'
 import {MdDelete} from 'react-icons/lib/md';
 import Chart from 'chart.js';
+import { colFacturas } from './columns/col-facturas';
 
 
 
@@ -23,7 +24,8 @@ class Table extends Component {
       dataNotFormatted: [],
       typeTable: '',
       columns: [],
-      loading: true
+      loading: true,
+      show: true
     }
     moment.locale('es');
   }
@@ -35,7 +37,7 @@ class Table extends Component {
       case 'trabajadores':
         return colContabilidad;
       case 'facturas':
-        return colContabilidad;
+        return colFacturas;
       default:
         break;
     }
@@ -44,7 +46,8 @@ class Table extends Component {
   componentWillMount(){
       this.setState({
         typeTable: this.props.type,
-        dataNotFormatted: this.props.data
+        dataNotFormatted: this.props.data,
+        show: this.props.show
       }, () => {
         var columns = this.getColumns();
         this.formattingData();
@@ -68,7 +71,8 @@ class Table extends Component {
     if (this.props != nextProps) {
       this.setState({
         typeTable: nextProps.type,
-        dataNotFormatted: nextProps.data
+        dataNotFormatted: nextProps.data,
+        show: nextProps.show
       }, () => {
         var columns = this.getColumns();
         this.formattingData();
@@ -111,38 +115,41 @@ class Table extends Component {
 
   render() {
     const data = this.state.dataFormatted;
-
+    const showing = this.state.show; 
     return (
-      <ReactTable
-        data={data}
-        columns={this.state.columns}
-        loading={this.state.loading}
-        noDataText="No existen resultados"
-        loadingText="Cargando resultados..."
-        style={{
-            height: "500px" // This will force the table body to overflow and scroll, since there is not enough room
-          }}
-        filterable
-        defaultPageSize={10}
-        className="-striped -highlight mrgTable"
-        getTheadProps={() => {
-          return {
-            style: {
-              fontWeight: 'bold'
+      <div>
+        {(showing) ?
+        <ReactTable
+          data={data}
+          columns={this.state.columns}
+          loading={this.state.loading}
+          noDataText="No existen resultados"
+          loadingText="Cargando resultados..."
+          style={{
+              height: "500px" // This will force the table body to overflow and scroll, since there is not enough room
+            }}
+          filterable
+          defaultPageSize={10}
+          className="-striped -highlight mrgTable"
+          getTheadProps={() => {
+            return {
+              style: {
+                fontWeight: 'bold'
+              }
             }
           }
-        }
-        }
-        getPaginationProps={(rowInfo, state, ) => {
-          return {
-            nextText: 'Siguiente',
-            previousText: 'Anterior',
-            pageText: 'Página',
-            ofText: 'de',
-            rowsText: 'filas'
           }
-        }}
-      />
+          getPaginationProps={(rowInfo, state, ) => {
+            return {
+              nextText: 'Siguiente',
+              previousText: 'Anterior',
+              pageText: 'Página',
+              ofText: 'de',
+              rowsText: 'filas'
+            }
+          }}
+        /> : ''}
+      </div>
     );
   }
 }
