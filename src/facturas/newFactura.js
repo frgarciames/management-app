@@ -197,7 +197,12 @@ class NewFactura extends Component {
         comment: "",
         provider: "",
         errorAmount: false,
-        errorDate: false
+        errorDate: false,
+        provider: {
+          id: "",
+          name: ""
+        },
+        selectDisabled: false
       });
     }
   }
@@ -238,7 +243,7 @@ class NewFactura extends Component {
           <Input bdcolor="#ccc" color="#222" type="date"  id="fecha" name="fecha_factura" cursor="pointer" change={(event) => this.handleChangeDate(event)} />
           {(this.state.errorDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</span> : ''}
         </p>
-        <div>
+        <div style={{marginTop: '1em'}}>
           <label>Proveedor:</label>
           <Select
                 name="form-field-name"
@@ -258,7 +263,10 @@ class NewFactura extends Component {
               </div>
           </div>
         </div>
-        {(this.state.selectDisabled) ? <p>Escriba el proveedor <input type="text" onChange={(event) => this.handleChangeProvider(event)} /></p> : ''}
+        {(this.state.selectDisabled) ?
+           <p style={{marginTop: '1em'}}>Escriba el proveedor
+            <Input bdcolor="#ccc" color="#222" type="text"  id="providerOther" name="providerOther" change={(event) => this.handleChangeProvider(event)} />
+            </p> : ''}
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
           <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />

@@ -30,7 +30,7 @@ const ContainerWrapper = styled.div`
 const FlexWrapper = styled.div`
   display: flex;
   justify-content: space-around;
-  @media(max-width: 1700px){
+  @media(max-width: 1300px){
     flex-direction: column;
   }
 `;
@@ -40,9 +40,8 @@ const Wrapper = styled.div`
   max-width: 1000px;
   padding: 1em;
   padding-top: 0;
-  @media(max-width: 1700px){
+  @media(max-width: 1300px){
     margin: 0 auto;
-    max-width: 1000px;
   }
 `;
 
@@ -125,7 +124,8 @@ class Facturas extends Component {
       showTable: true,
       showChart: true,
       facturasToChart: [],
-      months: getMonths()
+      months: getMonths(),
+      showModalDeleted: false
     }
 
     this.handleOpenModal = this.handleOpenModal.bind(this);
