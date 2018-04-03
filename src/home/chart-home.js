@@ -29,16 +29,16 @@ class ChartHome extends Component {
       let amountFactura = 0;
       arrayAuxCajas.forEach((caja) => {
         if(el.id == new Date(caja.fecha_caja).getMonth() + 1){
-          amountCaja += parseInt(caja.amount)
+          amountCaja += parseFloat(caja.amount)
         }
       })
       arrayAuxFacturas.forEach((factura) => {
         if(el.id == new Date(factura.fecha_factura).getMonth() + 1){
-          amountFactura += parseInt(factura.amount)
+          amountFactura += parseFloat(factura.amount)
         }
       })
-      totalAmountCajasPerMonth.push(amountCaja)
-      totalAmountFacturasPerMonth.push(amountFactura)
+      totalAmountCajasPerMonth.push(amountCaja.toFixed(2))
+      totalAmountFacturasPerMonth.push(amountFactura.toFixed(2))
     })
     this.setState({
       cajasPerChart: totalAmountCajasPerMonth,
@@ -60,16 +60,16 @@ class ChartHome extends Component {
       let amountFactura = 0;
       arrayAuxCajas.forEach((caja) => {
         if(el.id == new Date(caja.fecha_caja).getMonth() + 1){
-          amountCaja += parseInt(caja.amount)
+          amountCaja += parseFloat(caja.amount)
         }
       })
       arrayAuxFacturas.forEach((factura) => {
         if(el.id == new Date(factura.fecha_factura).getMonth() + 1){
-          amountFactura += parseInt(factura.amount)
+          amountFactura += parseFloat(factura.amount)
         }
       })
-      totalAmountCajasPerMonth.push(amountCaja)
-      totalAmountFacturasPerMonth.push(amountFactura)
+      totalAmountCajasPerMonth.push(amountCaja.toFixed(2))
+      totalAmountFacturasPerMonth.push(amountFactura.toFixed(2))
     })
     this.setState({
       cajasPerChart: totalAmountCajasPerMonth,
@@ -84,7 +84,8 @@ class ChartHome extends Component {
         <Chart 
           cajas={this.state.cajasPerChart} 
           facturas={this.state.facturasPerChart} 
-          legendPosition="bottom" type="mixed" 
+          legendPosition="bottom" 
+          type="mixed" 
           text="Cantidad en € de cajas diarias" 
           months={this.state.monthsPerName}/>
       </div>

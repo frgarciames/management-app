@@ -19,6 +19,9 @@ class Login extends Component {
     }
     this.onAuthEmail = this.onAuthEmail.bind(this);
   }
+  componentWillMount(){
+    document.title = 'Gestión - Login';
+  }
   onAuthEmail(email, password, event){
     this.props.onAuthEmail(email, password, event);
   }

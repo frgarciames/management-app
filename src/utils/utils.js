@@ -78,4 +78,3 @@ export const getMonths = () => {
         {name: 'noviembre', id: 11},
         {name: 'diciembre', id: 12}]
     }
-

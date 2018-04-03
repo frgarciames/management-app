@@ -199,7 +199,7 @@ class newCaja extends Component {
         </p>
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
-          <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
+          <Input step="any" bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
           {(this.state.errorAmount) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La cantidad es obligatoria</span> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>

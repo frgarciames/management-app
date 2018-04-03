@@ -13,6 +13,21 @@ export function getProviders(){
     return firebase.database().ref().child('providers')
 }
 
+export function getColorProviderById(id){
+    const providersRef = getProviders();
+    let color = "#fff";
+
+    providersRef.on('value', snapshot => {
+      var providers = [];
+      snapshot.forEach(provider => {
+        providers.push(provider.val());
+      })
+      let providerSelected = providers.filter(el => el.id === id);
+      color = providerSelected[0].color;
+    })
+    return color;
+}
+
 export function deleteCaja(caja){
     var desertRef = firebase.database().ref().child('cajas/' + caja.id);
     

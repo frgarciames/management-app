@@ -20,6 +20,7 @@ class Proveedores extends Component {
 
   componentWillMount() {
     const facturasRef = getFacturas();
+    document.title = 'Gestión - Proveedores';
 
     facturasRef.on('value', snapshot => {
       var facturas = [];
@@ -29,7 +30,7 @@ class Proveedores extends Component {
       this.setState({
         facturas
       }, () => {
-        var totalAmount = this.state.facturas.reduce((a, b) => a + parseInt(b.amount), 0);
+        var totalAmount = this.state.facturas.reduce((a, b) => a + parseFloat(b.amount), 0).toFixed(2);
         this.setState({
           totalAmount
         })
@@ -41,7 +42,7 @@ class Proveedores extends Component {
   render() {
     return (
       <ContainerChart>
-        <ChartFacturas data={this.state.facturas} show={true} title={"Cantidad total de € en facturas del año: " + this.state.totalAmount + "€"} />
+        <ChartFacturas data={this.state.facturas} show={true} title={"Total en € de facturas/año: " + this.state.totalAmount + "€"} />
       </ContainerChart>
     );
   }

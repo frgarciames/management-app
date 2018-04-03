@@ -2,6 +2,7 @@ import React, { Component}  from 'react';
 import matchSorter from 'match-sorter';
 import {MdDelete} from 'react-icons/lib/md';
 import {deleteCaja} from '../../services/services'
+import moment from 'moment-with-locales-es6'
 
 var value = (num) => (num/20);
 export const colFacturas = [
@@ -61,6 +62,9 @@ export const colFacturas = [
   },{
     Header: 'Proveedor',
     accessor: 'provider',
+    filterMethod: (filter, rows) =>
+      matchSorter(rows, filter.value, { keys: ["provider.name"] }),
+    filterAll: true,
     Cell: row => (
       row.value.name
     ),
@@ -75,6 +79,9 @@ export const colFacturas = [
     Cell: row => (
       row.value
     ),
+    sortMethod: (a, b) => 
+    (parseInt(moment(a).day()) > parseInt(moment(b).day()) ? 
+    (parseInt(moment(a).month()) > parseInt(moment(b).month()) ? 1 : -1) : -1),
     minWidth: 220
   }, {
     Header: 'Fecha inserción',
@@ -85,6 +92,9 @@ export const colFacturas = [
     Cell: row => (
       row.value
     ),
+    sortMethod: (a, b) => 
+    (parseInt(moment(a).day()) > parseInt(moment(b).day()) ? 
+    (parseInt(moment(a).month()) > parseInt(moment(b).month()) ? 1 : -1) : -1),
     minWidth: 220
   }, {
     Header: 'Comentario', // Custom header components!

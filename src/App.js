@@ -37,7 +37,6 @@ class App extends Component {
 
   handleOnAuthGoogle (event){
     event.preventDefault();
-    console.log('login en APP')
     const provider = new firebase.auth.GoogleAuthProvider();
 
     firebase.auth().signInWithPopup(provider)
@@ -47,7 +46,6 @@ class App extends Component {
 
   handleOnAuth(email, password, event){
     event.preventDefault();
-    console.log(email, password);
     firebase.auth().signInWithEmailAndPassword(email, password)
     .catch(error => {
       var errorCode = error.code;

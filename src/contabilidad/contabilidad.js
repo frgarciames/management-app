@@ -143,6 +143,7 @@ class Contabilidad extends Component {
 
   componentWillMount() {
     const cajasRef = getCajas();
+    document.title = 'Gestión - Contabilidad';
 
     cajasRef.on('value', snapshot => {
       var cajas = [];
@@ -152,11 +153,16 @@ class Contabilidad extends Component {
       this.setState({
         cajas
       }, () => {
+        let monthId = moment(new Date()).month() + 1;
+        let monthSelected = this.state.months.filter(el => {
+          return el.id == monthId
+        })
         let cajasPerMonth = this.state.cajas.filter(el => {
           return moment(new Date()).month() == moment(el.fecha_caja).month();
         })
         this.setState({
-          cajasToChart: cajasPerMonth
+          cajasToChart: cajasPerMonth,
+          monthSelected: monthSelected[0]
         })
       })
     })
@@ -231,6 +237,7 @@ class Contabilidad extends Component {
 
             <ReactModal 
               isOpen={this.state.showModal}
+              ariaHideApp={false}
               contentLabel="Minimal Modal Example"
               onRequestClose={this.handleCloseModal}
               style={{
@@ -324,7 +331,7 @@ class Contabilidad extends Component {
             {(this.state.showChart) ? 
             <div>
               <SelectMonth>
-                <select onChange={(event) => this.changeMonth(event)}>
+                <select onChange={(event) => this.changeMonth(event)} value={this.state.monthSelected.id}>
                 {this.state.months.map((el) => {
                   return <option key={el.id} value={el.id}>{el.name.charAt(0).toUpperCase() + el.name.slice(1)}</option>
                 })}

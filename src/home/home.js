@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ChartHome from './chart-home'
-import moment from 'moment-with-locales-es6';
-import { getFacturas, deleteFactura, getCajas } from '../services/services'
+import { getFacturas, getCajas } from '../services/services'
 
 
 
@@ -18,6 +17,7 @@ class Main extends Component {
   componentWillMount() {
     const facturasRef = getFacturas();
     const cajasRef = getCajas();
+    document.title = 'Gestión - Inicio';
 
     facturasRef.on('value', snapshot => {
       var facturas = [];

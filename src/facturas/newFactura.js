@@ -13,7 +13,7 @@ import ReactModal  from 'react-modal'
 import {MdClose} from 'react-icons/lib/md';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
-import { getProviders } from '../services/services'
+import { getProviders, getColorProviderById } from '../services/services'
 
 const ContainerBox = styled.form `
 width: 100%;
@@ -48,21 +48,25 @@ class NewFactura extends Component {
         openFactura: this.props.openFactura,
         facturas: [],
         fecha_factura: "",
+        colorProvider: '',
         amount: 0,
         comment: "",
         provider: {
           id: "",
-          name: ""
+          name: "",
+          color: ""
         },
         errorAmount: false,
         errorDate: false,
         errorProvider: false,
+        errorColor: false,
         selectDisabled: false,
         providers: [],
         options: [],
         selectedOption: {}
     }
     this.handleAddFactura = this.handleAddFactura.bind(this);
+    this.closeModalAndResetState = this.closeModalAndResetState.bind(this);
   }
 
   componentWillMount(){
@@ -101,9 +105,27 @@ class NewFactura extends Component {
     if(null != provider){
       (this.state.selectDisabled) ? 
       this.setState({ provider: {id: "", name: provider.target.value} }) : 
-      this.setState({ provider: {id: provider.value, name: provider.label}, selectedOption: {label: provider.label, value: provider.value} })
+      this.setState({ 
+        provider: {
+          id: provider.value, 
+          name: provider.label, 
+          color: getColorProviderById(provider.value)
+        }, 
+        selectedOption: {
+          label: provider.label, 
+          value: provider.value
+        },
+        colorProvider: getColorProviderById(provider.value)
+      })
     }
+  }
 
+  handleColorProvider(event){
+    let id = this.state.provider.id;
+    let name = this.state.provider.name;
+    this.setState({
+      colorProvider: event.target.value
+    })
   }
 
   handleChangeAmount(event){
@@ -136,13 +158,28 @@ class NewFactura extends Component {
     return options;
   }
 
+  closeModalAndResetState(){
+    this.props.close()
+    this.setState({
+      errorAmount: false, 
+      errorProvider: false, 
+      errorDate: false, 
+      errorColor: false,
+      fecha_factura: "", 
+      provider: {}, 
+      amount: 0, 
+      colorProvider: '',
+      selectDisabled: false
+    })
+  }
+
   handleAddFactura(event){
     var errors = false;
     this.setState({
       errorDate: false,
       errorAmount: false
     })
-    if(this.state.amount == null || this.state.amount == ''){
+    if(this.state.amount == null || this.state.amount == 0){
       errors = true;
       this.setState({
         errorAmount: true
@@ -159,10 +196,21 @@ class NewFactura extends Component {
       })
     }
 
+    if(this.state.colorProvider == null || this.state.colorProvider == ''){
+      errors = true;
+      this.setState({
+        errorColor: true
+      })
+    } else {
+      let provider = this.state.provider;
+      provider.color = this.state.colorProvider;
+      this.setState({
+        provider
+      })
+    }
+
     if(this.state.provider == null || 
       this.state.provider == undefined || 
-      this.state.provider.id == null ||
-      this.state.provider.id == "" ||
       this.state.provider.name == null ||
       this.state.provider.name == "" 
     ) {
@@ -185,14 +233,14 @@ class NewFactura extends Component {
         provider: this.state.provider,
         comment: this.state.comment
       }
-      console.log(this.state.provider.id);
-      if(null === this.state.provider.id || "" === this.state.provider.id){
+      if(null === this.state.provider.id || "" === String(this.state.provider.id)){
         const providerRef = firebase.database().ref().child('providers');
         const providerID = providerRef.push();
 
         var provider = {
           id: providerID.path.pieces_[1],
-          name: this.state.provider.name
+          name: this.state.provider.name,
+          color: this.state.provider.color
         }
 
         providerID.set(provider)
@@ -205,21 +253,7 @@ class NewFactura extends Component {
       this.setState({
         openFactura: false
       })
-      this.props.close();
-      this.setState({
-        fecha_factura: "",
-        amount: 0,
-        comment: "",
-        provider: "",
-        errorAmount: false,
-        errorDate: false,
-        errorProvider: false,
-        provider: {
-          id: "",
-          name: ""
-        },
-        selectDisabled: false
-      });
+      this.closeModalAndResetState();
     }
   }
 
@@ -231,7 +265,7 @@ class NewFactura extends Component {
               ariaHideApp={false}
               isOpen={this.props.opened}
               contentLabel="Minimal Modal Example"
-              onRequestClose={() => {this.props.close(), this.setState({errorAmount: false, errorProvider: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}
+              onRequestClose={this.closeModalAndResetState}
               style={{
                 content: {
                   position: 'absolute',
@@ -245,7 +279,7 @@ class NewFactura extends Component {
                 }
               }}
             >
-            <ContainerClose onClick={() => {this.props.close(), this.setState({errorAmount: false, errorProvider: false, errorDate: false, fecha_factura: "", provider: "", amount: 0})}}>
+            <ContainerClose onClick={this.closeModalAndResetState}>
               <MdClose 
                 style={{
                   fontSize: '1.3em',
@@ -281,13 +315,20 @@ class NewFactura extends Component {
           </div>
         </div>
         {(this.state.selectDisabled) ?
-           <p style={{marginTop: '1em'}}>Escriba el proveedor:
-            <Input bdcolor="#ccc" color="#222" type="text"  id="providerOther" mgTop="0" name="providerOther" change={(event) => this.handleChangeProvider(event)} />
-            </p> : ''} 
-        {(this.state.errorProvider) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '-1em'}}>*El proveedor es obligatorio</span> : ''}
+          <div>
+            <p style={{marginTop: '1em'}}>Escriba el proveedor:
+              <Input bdcolor="#ccc" color="#222" type="text"  id="providerOther" mgTop="0" name="providerOther" change={(event) => this.handleChangeProvider(event)} />
+            {(this.state.errorProvider) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '-1em'}}>*El proveedor es obligatorio</span> : ''}
+            </p> 
+            <p>Escoja su color:
+              <Input type="color" id="providerColor" name="providerColor" change={(event) => this.handleColorProvider(event)} />
+              {(this.state.errorColor) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*El color es obligatorio</span> : ''}
+            </p>
+          </div>
+            : ''} 
         <p style={{marginTop: 1 + "em"}}>
           <label htmlFor="money">Total €:</label>
-          <Input bdcolor="#ccc" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
+          <Input bdcolor="#ccc" step="any" color="#222" type="number"  id="money" name="amount" change={(event) => this.handleChangeAmount(event)} />
           {(this.state.errorAmount) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La cantidad es obligatoria</span> : ''}
         </p>
         <p style={{marginTop: 1 + "em"}}>

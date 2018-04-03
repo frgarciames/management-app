@@ -10,13 +10,19 @@ class ChartFacturas extends Component {
       facturas: props.data,
       amountFacturas: [],
       show: true,
-      titleChart: ""
+      titleChart: "",
+      totalMonth: 0,
+      month: ''
     }
   }
 
   componentWillMount(){
 
     var arrayAux = JSON.parse(JSON.stringify(this.props.data));
+    this.setState({
+      totalMonth: arrayAux.reduce((a, b) => parseFloat(a) + parseFloat(b.amount), 0).toFixed(2),
+      month: this.props.month
+    })
     var providers = [];
     arrayAux.forEach((el) => {
         providers.push(el.provider)
@@ -35,21 +41,22 @@ class ChartFacturas extends Component {
         return a;
     },[]);
     var providerNames = [];
+    var providerColors = [];
     
     uniq.forEach(el => {
       providerNames.push(el.name)
+      providerColors.push(el.color)
     })
     var amountArr = [];
     providerNames.forEach((elName) => {
       var amount = 0;
       arrayAux.forEach(el => {
         if(elName == el.provider.name){
-          amount += parseInt(el.amount);
+          amount += parseFloat(el.amount);
         }
       })
-      amountArr.push(amount);
+      amountArr.push(amount.toFixed(2));
     })
-    console.log(amountArr)
     this.setState({
         show: this.props.show,
         titleChart: this.props.title,
@@ -59,7 +66,7 @@ class ChartFacturas extends Component {
               {
                 label:'Cantidad',
                 data: amountArr,
-                backgroundColor: ['#F38069', 'blue'],
+                backgroundColor: providerColors,
                 borderColor: 'white'
               }
             ]
@@ -69,6 +76,10 @@ class ChartFacturas extends Component {
 
   componentWillReceiveProps(props){
     var arrayAux = JSON.parse(JSON.stringify(props.data));
+    this.setState({
+      totalMonth: arrayAux.reduce((a, b) => parseFloat(a) + parseFloat(b.amount), 0).toFixed(2),
+      month: props.month
+    })
     var providers = [];
     arrayAux.forEach((el) => {
         providers.push(el.provider)
@@ -87,19 +98,21 @@ class ChartFacturas extends Component {
         return a;
     },[]);
     var providerNames = [];
+    var providerColors = [];
     
     uniq.forEach(el => {
       providerNames.push(el.name)
+      providerColors.push(el.color)
     })
     var amountArr = [];
     providerNames.forEach((elName) => {
       var amount = 0;
       arrayAux.forEach(el => {
         if(elName == el.provider.name){
-          amount += parseInt(el.amount);
+          amount += parseFloat(el.amount);
         }
       })
-      amountArr.push(amount);
+      amountArr.push(amount.toFixed(2));
     })
     this.setState({
         show: props.show,
@@ -110,7 +123,7 @@ class ChartFacturas extends Component {
               {
                 label:'Cantidad',
                 data: amountArr,
-                backgroundColor: ['#F38069', 'blue'],
+                backgroundColor: providerColors,
                 borderColor: 'white'
               }
             ]
@@ -125,7 +138,8 @@ class ChartFacturas extends Component {
         <Chart chartData={this.state.chartData} legendPosition="bottom" type="pie" text={(this.state.titleChart == "" ||
                                                                                           this.state.titleChart == null ||
                                                                                           this.state.titleChart == undefined) ? 
-        "Cantidad en € de facturas" : this.state.titleChart}/>
+        "Cantidad en € de facturas de " + this.state.month.charAt(0).toUpperCase() + this.state.month.slice(1) + ": " + this.state.totalMonth : 
+        this.state.titleChart}/>
         : ''}
       </div>
     );

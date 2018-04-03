@@ -79,29 +79,29 @@ class Chart extends Component {
         )
         break;
       case 'mixed':
-      console.log(this.props)
       const data = {
         labels: this.props.months,
         datasets: [{
+            type: 'line',
+            label: 'Facturas',
+            data: this.props.facturas,
+            fill: false,
+            backgroundColor: '#fff',
+            borderColor: 'red',
+            hoverBackgroundColor: '#71B37C',
+            hoverBorderColor: '#71B37C'
+          },{
             label: 'Cajas',
-            type:'line',
+            type:'bar',
             data: this.props.cajas,
             fill: false,
-            borderColor: '#EC932F',
-            backgroundColor: '#EC932F',
+            borderColor: '#85cc00',
+            borderWidth: 3,
+            backgroundColor: '#fff',
             pointBorderColor: '#EC932F',
             pointBackgroundColor: '#EC932F',
             pointHoverBackgroundColor: '#EC932F',
             pointHoverBorderColor: '#EC932F'
-          },{
-            type: 'bar',
-            label: 'Facturas',
-            data: this.props.facturas,
-            fill: false,
-            backgroundColor: '#71B37C',
-            borderColor: '#71B37C',
-            hoverBackgroundColor: '#71B37C',
-            hoverBorderColor: '#71B37C'
           }]
       };
       const options = {

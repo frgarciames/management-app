@@ -31,6 +31,7 @@ class Input extends Component {
         cursor={this.props.cursor}
         required={this.props.required}
         mgTop={this.props.mgTop}
+        step={this.props.step}
       />
     );
   }

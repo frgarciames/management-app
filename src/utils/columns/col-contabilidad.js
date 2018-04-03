@@ -2,8 +2,9 @@ import React, { Component}  from 'react';
 import matchSorter from 'match-sorter';
 import {MdDelete} from 'react-icons/lib/md';
 import {deleteCaja} from '../../services/services'
+import moment from 'moment-with-locales-es6'
 
-var value = (num) => (num/20);
+var value = (num) => (num/15);
 export const colContabilidad = [
   {
     Header: '', // Custom header components!
@@ -32,10 +33,10 @@ export const colContabilidad = [
     >
       <div
         style={{
-          width: `${value(row.value)}%`,
+          width: `${value(row.value).toFixed(2)}%`,
           height: '100%',
-          backgroundColor: row.value > 1500? '#85cc00'
-            : row.value > 700 ? '#ffbf00'
+          backgroundColor: row.value > 700? '#85cc00'
+            : row.value > 350 ? '#ffbf00'
             : '#ff2e00',
           borderRadius: '2px',
           transition: 'all .2s ease-out'
@@ -67,6 +68,9 @@ export const colContabilidad = [
     Cell: row => (
       row.value
     ),
+    sortMethod: (a, b) => 
+      (parseInt(moment(a).day()) > parseInt(moment(b).day()) ? 
+      (parseInt(moment(a).month()) > parseInt(moment(b).month()) ? 1 : -1) : -1),
     minWidth: 220
   }, {
     Header: 'Fecha inserción',
@@ -77,6 +81,9 @@ export const colContabilidad = [
     Cell: row => (
       row.value
     ),
+    sortMethod: (a, b) => 
+    (parseInt(moment(a).day()) > parseInt(moment(b).day()) ? 
+    (parseInt(moment(a).month()) > parseInt(moment(b).month()) ? 1 : -1) : -1),
     minWidth: 220
   }, {
     Header: 'Comentario', // Custom header components!

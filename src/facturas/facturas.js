@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import firebase from 'firebase'
 import Button from '../utils/button'
-import ReactTable from 'react-table';
 import 'react-table/react-table.css'
 import styles from '../styles/styles.css'
 import moment from 'moment-with-locales-es6';
 import Table from '../utils/table'
-import { formatDateForTable, printDataTable, renderEditableForTable, getMonths } from '../utils/utils';
+import { getMonths } from '../utils/utils';
 import { getFacturas, deleteFactura } from '../services/services'
 import ReactModal  from 'react-modal'
 import {MdWarning, MdCheck, MdClose} from 'react-icons/lib/md';
@@ -30,7 +28,7 @@ const ContainerWrapper = styled.div`
 const FlexWrapper = styled.div`
   display: flex;
   justify-content: space-around;
-  @media(max-width: 1300px){
+  @media(max-width: 1900px){
     flex-direction: column;
   }
 `;
@@ -40,7 +38,7 @@ const Wrapper = styled.div`
   max-width: 1000px;
   padding: 1em;
   padding-top: 0;
-  @media(max-width: 1300px){
+  @media(max-width: 1950px){
     margin: 0 auto;
   }
 `;
@@ -52,11 +50,6 @@ const ContainerButton = styled.div`
   @media(max-width:500px){
     
   }
-`;
-
-const WrapperBox = styled.div`
-  width: 100%;
-  margin-top: 1.5em;
 `;
 
 const HeaderModal = styled.div`
@@ -125,6 +118,10 @@ class Facturas extends Component {
       showChart: true,
       facturasToChart: [],
       months: getMonths(),
+      monthSelected: {
+        id: 0,
+        name: ""
+      },
       showModalDeleted: false
     }
 
@@ -138,6 +135,7 @@ class Facturas extends Component {
 
   componentWillMount() {
     const facturasRef = getFacturas();
+    document.title = 'Gestión - Facturas';
 
     facturasRef.on('value', snapshot => {
       var facturas = [];
@@ -147,11 +145,14 @@ class Facturas extends Component {
       this.setState({
         facturas
       }, () => {
-        let facturasPerMonth = this.state.facturas.filter(el => {
-          return moment(new Date()).month() == moment(el.fecha_factura).month();
-        })
+        let monthId = moment(new Date()).month() + 1;
+        let monthSelected = this.state.months.find(el => parseInt(el.id) === parseInt(monthId))
+        let facturasPerMonth = this.state.facturas.filter(el =>
+           moment(new Date()).month() === moment(el.fecha_factura).month()
+        )
         this.setState({
-          facturasToChart: facturasPerMonth
+          facturasToChart: facturasPerMonth,
+          monthSelected: monthSelected
         })
       })
     })
@@ -162,18 +163,13 @@ class Facturas extends Component {
     (this.state.openFactura) ? 
     this.setState({openFactura: !this.state.openFactura}) : 
     this.setState({openFactura: !this.state.openFactura})
-    console.log(this.state.openFactura)
   }
 
-  handleOpenModal (id) {
-    var facturaSelected = Object;
-    this.state.facturas.forEach(el => {
-      if(el.id === id){
-        facturaSelected = el;
-        return
-      } 
-    })
-      this.setState({ showModal: true, facturaSelected });
+  handleOpenModal(id) {
+    let facturaSelected = this.state.facturas.find(el => 
+      el.id === id
+    )
+    this.setState({ showModal: true, facturaSelected });
   }
   
   handleCloseModal () {
@@ -189,14 +185,12 @@ class Facturas extends Component {
   }
 
   changeMonth(event){
-    let month = this.state.months.filter(el => {
-      return el.id == event.target.value
-    })
-    let facturasPerMonth = this.state.facturas.filter(el => {
-      return event.target.value == moment(el.fecha_factura).month() + 1;
-    })
+    let month = this.state.months.find(el => parseInt(el.id) === parseInt(event.target.value))
+    let facturasPerMonth = this.state.facturas.filter(el => 
+      parseInt(event.target.value) === parseInt(moment(el.fecha_factura).month() + 1)
+    )
     this.setState({
-      monthSelected: month[0],
+      monthSelected: month,
       facturasToChart: facturasPerMonth
     })
   }
@@ -223,6 +217,7 @@ class Facturas extends Component {
               isOpen={this.state.showModal}
               contentLabel="Minimal Modal Example"
               onRequestClose={this.handleCloseModal}
+              ariaHideApp={false} 
               style={{
                 content: {
                   position: 'absolute',
@@ -314,16 +309,16 @@ class Facturas extends Component {
             {(this.state.showChart) ? 
             <div>
               <SelectMonth>
-                <select onChange={(event) => this.changeMonth(event)}>
+                <select onChange={(event) => this.changeMonth(event)} value={this.state.monthSelected.id}>
                 {this.state.months.map((el) => {
-                  return <option key={el.id} value={el.id}>{el.name.charAt(0).toUpperCase() + el.name.slice(1)}</option>
+                  return <option key={el.id} value={el.id} >{el.name.charAt(0).toUpperCase() + el.name.slice(1)}</option>
                 })}
                   
                 </select>
               </SelectMonth>
             </div>
             : ''}
-            <ChartFacturas data={this.state.facturasToChart} show={this.state.showChart}/>
+            <ChartFacturas data={this.state.facturasToChart} show={this.state.showChart} month={this.state.monthSelected.name}/>
           </Wrapper>
         </FlexWrapper>
       </ContainerWrapper>
