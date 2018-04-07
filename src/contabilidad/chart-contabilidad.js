@@ -12,40 +12,7 @@ class ChartContabilidad extends Component {
       show: true
     }
   }
-
-  componentWillMount(){
-
-    var arrayAux = JSON.parse(JSON.stringify(this.props.data));
-    arrayAux.sort((a, b) => {
-        if (a.fecha_caja > b.fecha_caja) return -1;
-        if (a.fecha_caja < b.fecha_caja) return 1;
-        return 0;
-    })
-    var arrayAmount = [];
-    arrayAux.forEach(el => {
-        arrayAmount.push(el.amount);
-    })
-    var arrayDate = [];
-    arrayAux.forEach(el => {
-        arrayDate.push(moment(el.fecha_caja).format('L'));
-    })
-    this.setState({
-        amountCajas: arrayAux,
-        show: this.props.show,
-        chartData:{
-            labels: arrayDate,
-            datasets:[
-              {
-                label:'Cantidad',
-                data: arrayAmount,
-                backgroundColor:'#F38069',
-                borderColor: '#FF2E00'
-              }
-            ]
-          }
-    })
-  }
-
+  
   componentWillReceiveProps(props){
     var arrayAux = JSON.parse(JSON.stringify(props.data));
     arrayAux.sort((a, b) => {
@@ -53,14 +20,8 @@ class ChartContabilidad extends Component {
         if (a.fecha_caja < b.fecha_caja) return -1;
         return 0;
     })
-    var arrayAmount = [];
-    arrayAux.forEach(el => {
-        arrayAmount.push(el.amount);
-    })
-    var arrayDate = [];
-    arrayAux.forEach(el => {
-        arrayDate.push(moment(el.fecha_caja).format('L'));
-    })
+    var arrayAmount = arrayAux.map(el => el.amount);
+    var arrayDate = arrayAux.map(el => moment(el.fecha_caja).format('L'));
     this.setState({
         amountCajas: arrayAux,
         show: props.show,

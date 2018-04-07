@@ -53,9 +53,8 @@ class ChartHome extends Component {
     var arrayAuxFacturas = JSON.parse(JSON.stringify(props.facturas))
     let totalAmountCajasPerMonth = [];
     let totalAmountFacturasPerMonth = [];
-    let monthsPerName = []
+    let monthsPerName = this.state.months.map(el => el.name.charAt(0).toUpperCase() + el.name.slice(1));
     this.state.months.forEach((el) => {
-      monthsPerName.push(el.name.charAt(0).toUpperCase() + el.name.slice(1));
       let amountCaja = 0;
       let amountFactura = 0;
       arrayAuxCajas.forEach((caja) => {

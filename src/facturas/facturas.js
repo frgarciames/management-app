@@ -10,7 +10,7 @@ import { getFacturas, deleteFactura } from '../services/services'
 import ReactModal  from 'react-modal'
 import {MdWarning, MdCheck, MdClose} from 'react-icons/lib/md';
 import ChartFacturas from './chart-facturas'
-import NewFactura from './newFactura'
+import NewFactura from './new-factura'
 
 const ContainerClose = styled.span`
   position: absolute;

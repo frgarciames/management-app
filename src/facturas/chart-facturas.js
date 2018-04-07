@@ -16,74 +16,13 @@ class ChartFacturas extends Component {
     }
   }
 
-  componentWillMount(){
-
-    var arrayAux = JSON.parse(JSON.stringify(this.props.data));
-    this.setState({
-      totalMonth: arrayAux.reduce((a, b) => parseFloat(a) + parseFloat(b.amount), 0).toFixed(2),
-      month: this.props.month
-    })
-    var providers = [];
-    arrayAux.forEach((el) => {
-        providers.push(el.provider)
-    })
-    var uniq = providers.reduce((a, b) => {
-      function indexOfProperty (a, b){
-          for (var i=0;i<a.length;i++){
-              if(a[i].id == b.id){
-                   return i;
-               }
-          }
-         return -1;
-      }
-
-      if (indexOfProperty(a,b) < 0 ) a.push(b);
-        return a;
-    },[]);
-    var providerNames = [];
-    var providerColors = [];
-    
-    uniq.forEach(el => {
-      providerNames.push(el.name)
-      providerColors.push(el.color)
-    })
-    var amountArr = [];
-    providerNames.forEach((elName) => {
-      var amount = 0;
-      arrayAux.forEach(el => {
-        if(elName == el.provider.name){
-          amount += parseFloat(el.amount);
-        }
-      })
-      amountArr.push(amount.toFixed(2));
-    })
-    this.setState({
-        show: this.props.show,
-        titleChart: this.props.title,
-        chartData:{
-            labels: providerNames,
-            datasets:[
-              {
-                label:'Cantidad',
-                data: amountArr,
-                backgroundColor: providerColors,
-                borderColor: 'white'
-              }
-            ]
-          }
-    })
-  }
-
   componentWillReceiveProps(props){
     var arrayAux = JSON.parse(JSON.stringify(props.data));
     this.setState({
       totalMonth: arrayAux.reduce((a, b) => parseFloat(a) + parseFloat(b.amount), 0).toFixed(2),
       month: props.month
     })
-    var providers = [];
-    arrayAux.forEach((el) => {
-        providers.push(el.provider)
-    })
+    var providers = arrayAux.map(el => el.provider);
     var uniq = providers.reduce((a, b) => {
       function indexOfProperty (a, b){
           for (var i=0;i<a.length;i++){
@@ -97,13 +36,8 @@ class ChartFacturas extends Component {
       if (indexOfProperty(a,b) < 0 ) a.push(b);
         return a;
     },[]);
-    var providerNames = [];
-    var providerColors = [];
-    
-    uniq.forEach(el => {
-      providerNames.push(el.name)
-      providerColors.push(el.color)
-    })
+    var providerNames = uniq.map(el => el.name);
+    var providerColors = uniq.map(el => el.color);
     var amountArr = [];
     providerNames.forEach((elName) => {
       var amount = 0;

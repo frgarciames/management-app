@@ -117,12 +117,19 @@ class NewFactura extends Component {
         },
         colorProvider: getColorProviderById(provider.value)
       })
+    } else {
+      this.setState({
+        selectedOption: provider,
+        provider: {
+          id: "",
+          name: "",
+          color: ""
+        }
+      })
     }
   }
 
   handleColorProvider(event){
-    let id = this.state.provider.id;
-    let name = this.state.provider.name;
     this.setState({
       colorProvider: event.target.value
     })
@@ -148,13 +155,12 @@ class NewFactura extends Component {
   }
 
   getOptions(){
-    var options = [];
-    this.state.providers.forEach(el => {
-      options.push({
+    var options = this.state.providers.map(el => {
+      return {
         value: el.id,
         label: el.name
-      })
-    })
+      }
+    });
     return options;
   }
 
@@ -169,7 +175,8 @@ class NewFactura extends Component {
       provider: {}, 
       amount: 0, 
       colorProvider: '',
-      selectDisabled: false
+      selectDisabled: false,
+      comment: ''
     })
   }
 
@@ -294,19 +301,23 @@ class NewFactura extends Component {
           {(this.state.errorDate) ? <span style={{fontSize: '.8em', color: 'red', marginTop: '.3em'}}>*La fecha es obligatoria</span> : ''}
         </p>
         <div style={{marginTop: '1em'}}>
-          <label>Proveedor:</label>
-          <Select
-                name="form-field-name"
-                value={value}
-                onChange={(event) => this.handleChangeProvider(event)}
-                placeholder='Busca un proveedor'
-                disabled={this.state.selectDisabled}
-                options={this.state.options}
-                style={{
-                  marginBottom: '1em',
-                  marginTop: '1em'
-                }}
-            />
+          {(!this.state.selectDisabled) ? 
+            <div>
+              <label>Proveedor:</label>
+              <Select
+                    name="form-field-name"
+                    value={value}
+                    onChange={(event) => this.handleChangeProvider(event)}
+                    placeholder='Busca un proveedor'
+                    disabled={this.state.selectDisabled}
+                    options={this.state.options}
+                    style={{
+                      marginBottom: '1em',
+                      marginTop: '1em'
+                    }}
+                />
+            </div>
+              : ''}
           <div className="pretty p-switch p-fill">
               <input type="checkbox" onChange={(event) => this.handleChangeDisableSelect(event)} />
               <div className="state">
